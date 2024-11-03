@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-"""
-CLI to train and evaluate a General Model
-"""
 import argparse
 import datetime
 import getpass
@@ -350,10 +347,11 @@ def run(cfg_fn, encoder_name, transf_degree):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("cfg_fn", type=Path, help="Configuration file")
-    parser.add_argument("encoder_name", type=str, help="Model encoder")
-    parser.add_argument("transf_degree", type=float, help="Transform intensity")
+    parser = argparse.ArgumentParser(description="Parse command-line arguments for model training.",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("cfg_fn", type=Path, help="Path to the configuration file")
+    parser.add_argument("encoder_name", type=str, help="Name of the model encoder")
+    parser.add_argument("transf_degree", type=float, help="Degree of transformation intensity")
     args = parser.parse_args(args)
     args = vars(args)
     run(**args)

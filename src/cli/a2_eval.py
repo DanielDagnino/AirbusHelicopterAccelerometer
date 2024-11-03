@@ -21,9 +21,10 @@ from utils.general.custom_yaml import init_custom_yaml
 from utils.general.modifier import dict_modifier
 
 
-def run(cfg, n_feat):
+def run(cfg, percentile, n_max=None):
     cudnn.benchmark = True
-    n_max = None
+
+    n_feat = cfg.engine.model.args.input_dim
 
     model = Feature2DAirbusHelicopterAccelerometer(**cfg.engine.model.args)
     model.cuda()
@@ -56,7 +57,12 @@ def run(cfg, n_feat):
                 features = df[isample]
                 reconstruction_errors = []
                 for freqwind_features in features:
-                    freqwind_features = freqwind_features * (-0.05 / (1 + np.arange(64))).reshape(1, 64)
+                    if cfg.dataset.valid.weight == "pow1":
+                        freqwind_features = freqwind_features * (-0.05 / (1 + np.arange(64))).reshape(1, 64)
+                    elif cfg.dataset.valid.weight == "pow2":
+                        freqwind_features = freqwind_features * np.power(-0.05 / (1 + np.arange(64)), 2).reshape(1, 64)
+                    elif cfg.dataset.valid.weight != "pow0":
+                        raise ValueError(f'Not a valid weight = {cfg.dataset.valid.weight}')
 
                     freqwind_features = transforms(freqwind_features)
 
@@ -79,7 +85,7 @@ def run(cfg, n_feat):
 
                     # Reduction from 2d-matrix to single frame error
                     l2 = np.power(logits - freqwind_features, 2)
-                    mask = l2 > 0.0055  # np.percentile(reconstruction_error, 99)
+                    mask = l2 > percentile   # 10 * pow2 np.percentile(l2, 99) on training set
                     # reconstruction_error = mask * l2
                     reconstruction_error = mask
                     # reconstruction_error = l2
@@ -91,7 +97,8 @@ def run(cfg, n_feat):
 
                 # Reduction from N-essim temporal window to a single error
                 # df_gt.loc[isample, 'reconstruction_error'] = np.max(reconstruction_errors)
-                df_gt.loc[isample, 'reconstruction_error'] = np.mean(reconstruction_errors)
+                # df_gt.loc[isample, 'reconstruction_error'] = np.mean(reconstruction_errors)
+                df_gt.loc[isample, 'reconstruction_error'] = np.log(np.mean(reconstruction_errors) + 1.e-9)
 
                 if n_max is not None and isample == n_max-1:
                     break
@@ -104,12 +111,31 @@ def run(cfg, n_feat):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("cfg_fn", type=Path, help="Configuration file")
-    parser.add_argument("encoder_name", type=str, help="Model encoder")
-    parser.add_argument("n_feat", type=int, help="Model encoder")
-    parser.add_argument("--model_ckpt", type=str, default=None,
-                        help="If defined, the default ckpt of the cfg file will be changed.")
+    parser = argparse.ArgumentParser(
+        description="Evaluate a model for anomaly detection using Airbus Helicopter Accelerometer data.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "cfg_fn", type=Path,
+        help="Path to the configuration file specifying model and training parameters."
+    )
+    parser.add_argument(
+        "encoder_name", type=str,
+        help="Name of the model encoder to be used (e.g., 'resnet50')."
+    )
+    parser.add_argument(
+        "--percentile", type=float, default=0.0015,
+        help="Threshold value to filter-out errors. Errors below that will be set to zero."
+    )
+    parser.add_argument(
+        "--n_max", type=int, default=None,
+        help="Optional maximum number of samples to be processed (useful for quick testing)."
+    )
+    parser.add_argument(
+        "--model_ckpt", type=str, default=None,
+        help="Checkpoint file path to load a pre-trained model. Overrides the default checkpoint in the configuration "
+             "file if provided."
+    )
     args = parser.parse_args(args)
 
     args.cfg_fn = Path(args.cfg_fn).expanduser()
@@ -125,7 +151,7 @@ def main(args=None):
         args.model_ckpt = Path(args.model_ckpt).expanduser()
         cfg.engine.model.resume.load_model_fn = args.model_ckpt
 
-    run(cfg, args.n_feat)
+    run(cfg, percentile=args.percentile, n_max=args.n_max)
 
 
 if __name__ == "__main__":

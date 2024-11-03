@@ -25,17 +25,13 @@ def plot_eval(df_gt, dir_out):
     print()
     target_fpr = 0.01
     idx = (np.abs(fpr - target_fpr)).argmin()
-    tpr_at_target_fpr = tpr[idx]
-    threshold_at_target_fpr = thresholds[idx]
-    print(f"TPR at FPR = 0.01: {tpr_at_target_fpr}")
-    print(f"Threshold at FPR = 0.01: {threshold_at_target_fpr}")
+    print(f"TPR at FPR = ~{target_fpr} ({fpr[idx]}): {tpr[idx]}")
+    print(f"Threshold at FPR: {thresholds[idx]}")
 
     target_tpr = 0.85
     idx = (np.abs(tpr - target_tpr)).argmin()
-    fpr_at_target_tpr = fpr[idx]
-    threshold_at_target_tpr = thresholds[idx]
-    print(f"FPR at TPR = 0.85: {fpr_at_target_tpr}")
-    print(f"Threshold at TPR = 0.85: {threshold_at_target_tpr}")
+    print(f"FPR at TPR = ~{target_tpr} ({tpr[idx]}): {fpr[idx]}")
+    print(f"Threshold at TPR: {thresholds[idx]}")
     print()
 
     # Plotting

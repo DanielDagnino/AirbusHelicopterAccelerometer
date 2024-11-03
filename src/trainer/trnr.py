@@ -44,6 +44,39 @@ def trainer(epoch: int,
             non_blocking: bool = True,
             distributed_data_parallel: bool = False,
             ) -> (float, Dict[str, float], Module):
+    """
+        Train or evaluate a model for one epoch, including gradient scaling, gradient clipping,
+        metrics tracking, and saving checkpoints at intervals.
+
+        Parameters:
+            epoch (int): Current epoch number.
+            data_loader (DataLoader): DataLoader providing training or evaluation data.
+            model (Module): The model to train or evaluate.
+            optimizer (RETURN_optimizer_builder): Optimizer for updating model parameters.
+            lr_scheduler (RETURN_scheduler_builder): Learning rate scheduler for adjusting
+                the learning rate during training.
+            step_scheduler_at_save (bool): If True, updates the learning rate scheduler after saving.
+            loss_funct (Module): Loss function to calculate the training or evaluation loss.
+            metric_functs (Optional[Dict[str, Dict[str, BaseMetric]]]): Dictionary of metrics for
+                evaluating model performance, organized by stage.
+            scaler (GradScaler, optional): Gradient scaler for mixed-precision training, if enabled.
+            writer (SummaryWriter, optional): TensorBoard SummaryWriter for logging metrics and loss.
+            fn_resume (str, optional): Path to JSON file for saving resume information.
+            stage (str): Mode of operation, "train" for training or "test/valid" for evaluation.
+            clipper (Clipper, optional): Gradient clipper for controlling gradient size.
+            grad_accum (int): Number of gradient accumulation steps before optimizer update.
+            this_gpu (int): GPU device ID for data transfer.
+            rank (int): Rank of the process, used in multi-GPU settings.
+            n_log_interval (int): Interval for logging intermediate results.
+            n_save_inter_epoch (int): Interval for saving intermediate checkpoints.
+            save_tmp_model_fn (str, optional): Filename for saving temporary model checkpoints.
+            non_blocking (bool): Enables asynchronous data transfer to the specified GPU.
+            distributed_data_parallel (bool): Enables distributed data parallel training.
+
+        Returns:
+            Tuple[float, Dict[str, float], Module]: Final average loss, dictionary of average metrics
+            across the epoch, and the trained or evaluated model.
+        """
     logger = logging.getLogger(__name__ + ": " + inspect.currentframe().f_code.co_name)
 
     # Select whether trainable or not.
@@ -169,5 +202,5 @@ def trainer(epoch: int,
         resume.setdefault(stage, []).append(resume_it)
         json.dump(resume, open(fn_resume, 'w'), indent=4)
 
-    result = metric_meters["AUC"].avg if "AUC" in metric_meters else metric_meters["L2"].avg
+    result = metric_meters["AUC"].avg if "AUC" in metric_meters else metric_meters["L2"].avg  # FIXME
     return loss_meter.avg, result, model

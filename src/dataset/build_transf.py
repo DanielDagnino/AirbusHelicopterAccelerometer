@@ -2,6 +2,7 @@ import numpy as np
 
 
 class build_transforms:
+    """Class to transform the input data during training."""
     def __init__(self, preprocessor, transf_degree):
         self.mean = np.array(preprocessor['mean']).reshape(1, -1)
         self.std = np.array(preprocessor['std']).reshape(1, -1)
@@ -15,6 +16,7 @@ class build_transforms:
 
 
 class build_transforms_val:
+    """Class to transform the input data for inference."""
     def __init__(self, preprocessor, transf_degree):
         self.mean = np.array(preprocessor['mean']).reshape(1, -1)
         self.std = np.array(preprocessor['std']).reshape(1, -1)

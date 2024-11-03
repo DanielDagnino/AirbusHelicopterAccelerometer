@@ -49,7 +49,7 @@ def process(dir_out, win_length, n_fft, hop_length, eps=1.e-9):
         spectrograms = np.transpose(spectrograms, (0, 2, 1))
         print(f'spectrograms.shape = {spectrograms.shape}')
 
-        # Spectrograms to N 2D-matrices
+        # Spectrogram to N_2D-matrices
         n_samples, n_twind, n_feats = spectrograms.shape
         spectrograms = spectrograms.reshape(n_samples, -1, n_feats, n_feats)
         n_samples, n_wind, n_feats, n_feats = spectrograms.shape
@@ -65,11 +65,26 @@ def process(dir_out, win_length, n_fft, hop_length, eps=1.e-9):
 
 
 def main(args=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--dir_out", type=str, default="~/MyTmp/AirbusHelicopterAccelerometer/data-db", help="")
-    parser.add_argument("--n_fft", type=int, default=127, help="")
-    parser.add_argument("--win_length", type=int, default=126, help="")
-    parser.add_argument("--hop_length", type=int, default=8, help="")
+    parser = argparse.ArgumentParser(
+        description="Airbus Helicopter Accelerometer Data Processing Script",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument(
+        "--dir_out", type=str, default="~/MyTmp/AirbusHelicopterAccelerometer/data-db",
+        help="Output directory for processed data."
+    )
+    parser.add_argument(
+        "--n_fft", type=int, default=127,
+        help="Number of FFT components for STFT."
+    )
+    parser.add_argument(
+        "--win_length", type=int, default=126,
+        help="Length of each STFT window."
+    )
+    parser.add_argument(
+        "--hop_length", type=int, default=8,
+        help="Number of samples between successive frames."
+    )
     args = parser.parse_args(args)
     args = vars(args)
     process(**args)
