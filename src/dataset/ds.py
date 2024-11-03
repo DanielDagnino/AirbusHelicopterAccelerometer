@@ -25,6 +25,7 @@ class DatasetAirbusHelicopterAccelerometer(Dataset):
                  norm_path: str = None,
                  labels_path: str = None,
                  stage: str = 'train',
+                 weight: bool = False,
                  transf_degree: float = 0,
                  norm_max_min: bool = True,
                  rank: int = 0,
@@ -32,6 +33,7 @@ class DatasetAirbusHelicopterAccelerometer(Dataset):
                  ):
         self.logger = logging.getLogger(
             __name__ + ': ' + self.__class__.__qualname__ + '-' + inspect.currentframe().f_code.co_name)
+        self.weight = weight
         self.rank = rank
         self.verbose = verbose
         self.norm_max_min = norm_max_min
@@ -78,6 +80,10 @@ class DatasetAirbusHelicopterAccelerometer(Dataset):
     def __getitem__(self, idx) -> Tuple[Tensor, int]:
         features = np.load(self.matrix_paths[idx])
         features = self.transforms(features)
+
+        if self.weight:
+            features = features * (-0.05 / (1 + np.arange(64))).reshape(1, 64)
+
         if self.norm_max_min:
             features = (features - features.min()) / (features.max() - features.min() + 1.e-8)
             features = 2 * features - 1
@@ -106,12 +112,12 @@ def main_worker_for_test(this_gpu, n_gpus_per_node):
     _N_EXAMPLES = 20
     _COMPUTE_STATS = True
 
-    compute_normalization = False
+    compute_normalization = True
     for hyperparameters in ['127_126_8']:
         ds = DatasetAirbusHelicopterAccelerometer(
             stage='train',
-            dir_matrix=f'~/MyTmp/AirbusHelicopterAccelerometer/data/dftrain_127_126_8-1677-120',
-            norm_path=None if compute_normalization else '~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json',
+            dir_matrix=f'~/MyTmp/AirbusHelicopterAccelerometer/data-db/dftrain_127_126_8-1677-120',
+            norm_path=None if compute_normalization else '~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json',
             # labels_path='../../data/dfvalid_groundtruth.csv',
             norm_max_min=not compute_normalization,
             transf_degree=0,
@@ -136,7 +142,7 @@ def main_worker_for_test(this_gpu, n_gpus_per_node):
             cnt += bs * n_twind
             mean += _features.sum((0, 1)).to(torch.float)
             mean2 += _features.pow(2).sum((0, 1)).to(torch.float)
-            print(_features.shape, _lbls.shape)
+            # print(_features.shape, _lbls.shape)
             if not _COMPUTE_STATS and _it + 1 >= _N_EXAMPLES:
                 break
 
@@ -147,7 +153,7 @@ def main_worker_for_test(this_gpu, n_gpus_per_node):
         mean = [float(_) for _ in mean.tolist()]
         std = [float(_) for _ in std.tolist()]
         if compute_normalization:
-            fn_norm_out = f'~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_{hyperparameters}.json'
+            fn_norm_out = f'~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_{hyperparameters}.json'
             fn_norm_out = Path(fn_norm_out).expanduser()
             json.dump(dict(mean=mean, std=std), open(fn_norm_out, 'w'), indent=1)
         print()

@@ -72,15 +72,18 @@ loader:
 dataset:
   name: "DatasetAirbusHelicopterAccelerometer"
   train:
-    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data/dftrain_127_126_8-1677-120"
-#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json"
+    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dftrain_127_126_8-1677-120"
+#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json"
     norm_max_min: true
+    weight: false
     transf_degree: "{TRANSF_DEGREE}"
   valid:
-    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data/dfvalid_127_126_8-594-120"
-#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json"
+    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dfvalid_127_126_8-594-120"
+#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json"
     norm_max_min: true
+    weight: false
     labels_path: "../data/dfvalid_groundtruth.csv"
+    transf_degree: "{TRANSF_DEGREE}"
 
 optimizer:
 #  name: "SGD"

@@ -9,19 +9,20 @@ engine:
       variational: false
       verbose: false
     resume:
-#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var/autoencoder_v1-2024_11_01_07_49_21/models/E049_L0.0047_M:0.0047_L0.0047_M:0.0047.ckpt"
-#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var/autoencoder_v1-2024_11_01_05_06_51/models/E049_L0.0043_M:0.0043_L0.0043_M:0.0043.ckpt"
+      # 0   0.1   0-norm
+#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam/autoencoder_v1-2024_11_02_23_35_14/models/E040_L0.0176_M:0.0176_L0.0176_M:0.0176.ckpt"
+#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam/autoencoder_v1-2024_11_02_23_35_38/models/E012_L0.0181_M:0.0181_L0.0181_M:0.0181.ckpt"
+#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-norm/autoencoder_v1-2024_11_03_00_44_26/models/E001_L0.0203_M:0.0203_L0.0203_M:0.0203.ckpt"
 
-#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam/autoencoder_v1-2024_11_01_03_48_42/models/E049_L0.0018_M:0.0018_L0.0018_M:0.0018.ckpt"
-     load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer-/train_127_126_8-adam/autoencoder_v1-2024_11_01_09_13_07/models/E049_L0.0052_M:0.0052_L0.0052_M:0.0052.ckpt"
-
-#     load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-norm/autoencoder_v1-2024_11_01_06_30_44/models/E049_L0.0050_M:0.0050_L0.0050_M:0.0050.ckpt"
-#     load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-norm/autoencoder_v1-2024_11_01_11_56_19/models/E049_L0.0049_M:0.0049_L0.0049_M:0.0049.ckpt"
+      # adam adam-w
+      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-w/autoencoder_v1-2024_11_03_02_24_15/models/E015_L0.0021_M:0.0021_L0.0021_M:0.0021.ckpt"
+#      load_model_fn: "~/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-w/autoencoder_v1-2024_11_03_02_24_15/models/E008_L0.0025_M:0.0025_L0.0025_M:0.0025.ckpt"
 
 dataset:
   valid:
-    df_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/dfvalid_127_126_8-594-120.npy"
-#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json"
+#    df_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dftrain_127_126_8-1677-120.npy"  # for a threshold search
+    df_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dfvalid_127_126_8-594-120.npy"
+#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json"
     norm_path: null
     norm_max_min: true
     labels_path: "~/MyProjects/AirbusHelicopterAccelerometer/data/dfvalid_groundtruth.csv"

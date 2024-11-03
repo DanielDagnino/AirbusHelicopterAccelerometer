@@ -1,6 +1,6 @@
 modifiers:
   HOME: "{HOME}"
-  BASE_OUT_FOLDER: "{HOME}/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var-norm/{ENCODER_NAME}-{TIME}"
+  BASE_OUT_FOLDER: "{HOME}/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var-w/{ENCODER_NAME}-{TIME}"
 
   ENCODER_NAME: "{ENCODER_NAME}"
   TRANSF_DEGREE: "{TRANSF_DEGREE}"
@@ -23,7 +23,7 @@ seed: null
 
 distributed_data_parallel: true
 node_rank: 0
-dist_address: "127.0.0.1:1234"
+dist_address: "127.0.0.1:1238"
 world_size: 1
 
 engine:
@@ -39,7 +39,7 @@ engine:
     resume:
       load_model_fn: "no.ckpt"
       save_model_dir: "{BASE_OUT_FOLDER}/models"
-      save_tmp_model_fn: "{HOME}/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var-norm/tmp_model.ckpt"
+      save_tmp_model_fn: "{HOME}/MyTmp/AirbusHelicopterAccelerometer/train_127_126_8-adam-var-w/tmp_model.ckpt"
       load_optimizer: false
       load_scheduler: false
       save_all: true
@@ -72,15 +72,18 @@ loader:
 dataset:
   name: "DatasetAirbusHelicopterAccelerometer"
   train:
-    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data/dftrain_127_126_8-1677-120"
-    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json"
+    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dftrain_127_126_8-1677-120"
+#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json"
     norm_max_min: true
+    weight: true
     transf_degree: "{TRANSF_DEGREE}"
   valid:
-    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data/dfvalid_127_126_8-594-120"
-    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data/normalization_127_126_8.json"
+    dir_matrix: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/dfvalid_127_126_8-594-120"
+#    norm_path: "~/MyTmp/AirbusHelicopterAccelerometer/data-db/normalization_127_126_8.json"
     norm_max_min: true
+    weight: true
     labels_path: "../data/dfvalid_groundtruth.csv"
+    transf_degree: "{TRANSF_DEGREE}"
 
 optimizer:
 #  name: "SGD"

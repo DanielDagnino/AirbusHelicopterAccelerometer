@@ -40,8 +40,10 @@ def process(dir_out, win_length, n_fft, hop_length, eps=1.e-9):
                 window="hann",
                 win_length=win_length,
             ))
+            spectrogram = librosa.amplitude_to_db(spectrogram, ref=np.max)
             if idx == 0:
                 print(f'spectrogram.shape = {spectrogram.shape}')
+
             spectrograms.append(spectrogram)
         spectrograms = np.array(spectrograms)
         spectrograms = np.transpose(spectrograms, (0, 2, 1))
@@ -64,7 +66,7 @@ def process(dir_out, win_length, n_fft, hop_length, eps=1.e-9):
 
 def main(args=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--dir_out", type=str, default="~/MyTmp/AirbusHelicopterAccelerometer/data", help="")
+    parser.add_argument("--dir_out", type=str, default="~/MyTmp/AirbusHelicopterAccelerometer/data-db", help="")
     parser.add_argument("--n_fft", type=int, default=127, help="")
     parser.add_argument("--win_length", type=int, default=126, help="")
     parser.add_argument("--hop_length", type=int, default=8, help="")

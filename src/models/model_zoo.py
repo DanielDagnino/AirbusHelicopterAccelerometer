@@ -28,7 +28,7 @@ class Feature2DAirbusHelicopterAccelerometer(BaseModel):
                 nn.Conv2d(self.nc_out // 2, self.nc_out, kernel_size=ks, stride=2, padding=1),
                 nn.BatchNorm2d(self.nc_out),
                 activation,
-                nn.Dropout2d(0.1),
+                # nn.Dropout2d(0.1),
             )
             self.decoder = nn.Sequential(
                 nn.ConvTranspose2d(self.nc_out, self.nc_out // 2, kernel_size=ks, stride=2, padding=1, output_padding=1),
@@ -53,7 +53,7 @@ class Feature2DAirbusHelicopterAccelerometer(BaseModel):
         self.fc_decode = nn.Sequential(
             nn.Linear(self.nc_out * self.nf_out**2, self.bottleneck_dim),
             activation,
-            nn.Dropout1d(0.1),
+            # nn.Dropout1d(0.1),
             nn.Linear(self.bottleneck_dim, self.nc_out * self.nf_out ** 2),
             activation,
         )
@@ -62,14 +62,14 @@ class Feature2DAirbusHelicopterAccelerometer(BaseModel):
             self.fc_mu = nn.Sequential(
                 nn.Linear(self.nc_out * self.nf_out**2, self.bottleneck_dim),
                 activation,
-                nn.Dropout(0.1),
+                # nn.Dropout(0.1),
                 nn.Linear(self.bottleneck_dim, self.nc_out * self.nf_out ** 2),
                 activation,
             )
             self.fc_logvar = nn.Sequential(
                 nn.Linear(self.nc_out * self.nf_out**2, self.bottleneck_dim),
                 activation,
-                nn.Dropout(0.1),
+                # nn.Dropout(0.1),
                 nn.Linear(self.bottleneck_dim, self.nc_out * self.nf_out ** 2),
                 activation,
             )
